@@ -3,17 +3,17 @@ import java.util.Scanner;
 
 public class TicTacToeRunner {
 
-    private int boardSize = 3;
+    private final int boardSize = 3;
     private final int draw = 0;
-    private int oTurn = 1;
-    private int xTurn = 2;
+    private final int oTurn = 1;
+    private final int xTurn = 2;
     private final int noWin = 0;
     private final int oWin = 1;
     private final int xWin = 2;
-    private char oMark = 'O';
-    private char xMark = 'X';
-    private char blankSpace = ' ';
-    private char[][] board = new char[boardSize][boardSize];
+    private final char oMark = 'O';
+    private final char xMark = 'X';
+    private final char blankSpace = ' ';
+    private final char[][] board = new char[boardSize][boardSize];
     private Scanner scanner = new Scanner(System.in);
 
     public TicTacToeRunner() {
