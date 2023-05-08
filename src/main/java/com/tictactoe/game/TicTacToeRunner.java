@@ -1,4 +1,5 @@
 package com.tictactoe.game;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class TicTacToeRunner {
@@ -14,9 +15,57 @@ public class TicTacToeRunner {
     private final char xMark = 'X';
     private final char blankSpace = ' ';
     private final char[][] board = new char[boardSize][boardSize];
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
-    public TicTacToeRunner() {
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public int getDraw() {
+        return draw;
+    }
+
+    public int getoTurn() {
+        return oTurn;
+    }
+
+    public int getxTurn() {
+        return xTurn;
+    }
+
+    public int getNoWin() {
+        return noWin;
+    }
+
+    public int getoWin() {
+        return oWin;
+    }
+
+    public int getxWin() {
+        return xWin;
+    }
+
+    public char getoMark() {
+        return oMark;
+    }
+
+    public char getxMark() {
+        return xMark;
+    }
+
+    public char getBlankSpace() {
+        return blankSpace;
+    }
+
+    public char[][] getBoard() {
+        return board;
+    }
+
+    public Scanner getScanner() {
+        return scanner;
+    }
+
+    public void startGame(){
         System.out.println("Tic Tac Toe");
         fillBoard();
         int gameState = noWin;
@@ -56,17 +105,41 @@ public class TicTacToeRunner {
         }
     }
 
+    public void fillBoard(){
+        for(int i = 0; i < boardSize; i++){
+            for(int j = 0; j < boardSize; j++){
+                board[i][j] = blankSpace;
+            }
+        }
+    }
+
     public void makeAMove(){
         int row;
         int column;
 
         do {
-            System.out.println("Player " + nextPlayer() + " it's your turn:");
-            System.out.println("Pick a row (1-" + boardSize + "): ");
-            row = scanner.nextInt() - 1;
-            System.out.println("Pick a column (1-" + boardSize + "): ");
-            column = scanner.nextInt() - 1;
-        }while(!validateMove(row, column));
+            try {
+                System.out.println("Player " + nextPlayer() + " it's your turn:");
+                System.out.println("Pick a row (1-" + boardSize + "): ");
+                row = scanner.nextInt() - 1;
+                System.out.println("Pick a column (1-" + boardSize + "): ");
+                column = scanner.nextInt() - 1;
+
+                if(!validateMove(row, column)){
+                    throw new IllegalArgumentException();
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a number.");
+                scanner.nextLine(); //clear scanner buffer
+                row = -1;
+                column = -1;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid move! Please try again.");
+                scanner.nextLine(); //clear scanner buffer
+                row = -1;
+                column = -1;
+            }
+        }while(row < 0 || column < 0);
 
         if(nextPlayer() == oTurn){
             board[row][column] = oMark;
@@ -113,7 +186,7 @@ public class TicTacToeRunner {
                 if(board[i][0] == oMark){
                     return oWin;
                 } else if (board[i][0] == xMark){
-                    return xMark;
+                    return xWin;
                 }
             }
         }
@@ -126,7 +199,7 @@ public class TicTacToeRunner {
                 if(board[0][i] == oMark){
                     return oWin;
                 } else if(board[0][i] == xMark){
-                    return xMark;
+                    return xWin;
                 }
             }
         }
@@ -188,16 +261,8 @@ public class TicTacToeRunner {
         return noWin;
     }
 
-    public void fillBoard(){
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
-                board[i][j] = blankSpace;
-            }
-        }
-    }
-
-
     public static void main(String[] args) {
-        new TicTacToeRunner();
+        TicTacToeRunner runner = new TicTacToeRunner();
+        runner.startGame();
     }
 }
