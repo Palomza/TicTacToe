@@ -2,13 +2,7 @@ package com.tictactoe;
 
 import com.tictactoe.game.TicTacToeRunner;
 import org.junit.jupiter.api.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
 
 @DisplayName("TicTacToe Test Suite")
 class TicTacToeTestSuite {

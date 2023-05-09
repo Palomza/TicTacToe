@@ -9,6 +9,8 @@ public class TicTacToeRunner {
     private final int oTurn = 1;
     private final int xTurn = 2;
     private final int noWin = 0;
+    private final int playerVsPlayer = 0;
+    private final int playerVsPc = 1;
     private final int oWin = 1;
     private final int xWin = 2;
     private final char oMark = 'O';
@@ -65,24 +67,42 @@ public class TicTacToeRunner {
         return scanner;
     }
 
-    public void startGame(){
-        System.out.println("Tic Tac Toe");
+    public void startGame() {
+        System.out.println("Tic Tac Toe\n");
         fillBoard();
         int gameState = noWin;
+        int gameMode = setGameMode();
+        boolean pcTurn = false;
 
-        do{
-            drawBoard();
-            makeAMove();
-            gameState = checkGameState();
-        } while (gameState == noWin);
+        if(gameMode == playerVsPlayer) {
+            do {
+                drawBoard();
+                makeAMove();
+                gameState = checkGameState();
+            } while (gameState == noWin);
+        } else {
+            do {
+                if(pcTurn == false) {
+                    drawBoard();
+                    makeAMove();
+                    pcTurn = true;
+                    gameState = checkGameState();
+                } else {
+                    drawBoard();
+                    makeAMoveVsPc();
+                    pcTurn = false;
+                    gameState = checkGameState();
+                }
+            } while (gameState == noWin);
+        }
 
         drawBoard();
-        switch(gameState){
+        switch (gameState) {
             case xWin:
-                System.out.println("Player "+ xMark + " just won!");
+                System.out.println("Player " + xMark + " just won!");
                 break;
             case oWin:
-                System.out.println("Player "+ oMark + " just won!");
+                System.out.println("Player " + oMark + " just won!");
                 break;
             case draw:
                 System.out.println("No winners, it's a draw!");
@@ -113,13 +133,46 @@ public class TicTacToeRunner {
         }
     }
 
+    public int setGameMode(){
+        int gameMode;
+        do {
+            try {
+                System.out.println("Pick a game mode, type:");
+                System.out.println("\"1\" for Player vs Player");
+                System.out.println("\"2\" for Player vs Computer");
+                gameMode = scanner.nextInt() - 1;
+
+                if(validateGameMode(gameMode)) {
+                throw new IllegalArgumentException();
+                }
+
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid Input! Please enter a number.");
+                    scanner.nextLine();
+                    gameMode = -1;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid choice! Please select 1 or 2.");
+                    scanner.nextLine();
+                    gameMode = -1;
+                }
+            }while(gameMode < 0);
+        return gameMode;
+        }
+
+    public boolean validateGameMode(int gameMode) {
+        if (gameMode == 0 || gameMode == 1) {
+            return false;
+        }
+        return true;
+    }
+
     public void makeAMove(){
         int row;
         int column;
 
         do {
             try {
-                System.out.println("Player " + nextPlayer() + " it's your turn:");
+                System.out.println("Player " + nextPlayer() + " it's your turn");
                 System.out.println("Pick a row (1-" + boardSize + "): ");
                 row = scanner.nextInt() - 1;
                 System.out.println("Pick a column (1-" + boardSize + "): ");
@@ -148,6 +201,27 @@ public class TicTacToeRunner {
         }
     }
 
+    public void makeAMoveVsPc(){
+        int row;
+        int column;
+
+        do {
+            do {
+                row = (int) (Math.random() * boardSize);
+                column = (int) (Math.random() * boardSize);
+            }while(!validatePcMove(row, column));
+
+        }while(row < 0 || column < 0);
+
+        System.out.println("Computer picked row "+ (row+1)+ " and column "+ (column +1));
+
+        if(nextPlayer() == oTurn){
+            board[row][column] = oMark;
+        } else {
+            board[row][column] = xMark;
+        }
+    }
+
     public boolean validateMove(int row, int column){
         if(row < 0 || row >= boardSize || column < 0 || column >= boardSize){
             System.out.println("Your pick is out the board!");
@@ -157,6 +231,14 @@ public class TicTacToeRunner {
             return false;
         }
         return true;
+    }
+
+    public boolean validatePcMove(int row, int column){
+        if (board[row][column] != blankSpace){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public int nextPlayer(){
