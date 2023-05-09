@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class TicTacToeRunner {
 
-    private final int boardSize = 3;
+    private int boardSize = 3; // default board size
     private final int draw = 0;
     private final int oTurn = 1;
     private final int xTurn = 2;
@@ -16,7 +16,7 @@ public class TicTacToeRunner {
     private final char oMark = 'O';
     private final char xMark = 'X';
     private final char blankSpace = ' ';
-    private final char[][] board = new char[boardSize][boardSize];
+    private char[][] board;
     private final Scanner scanner = new Scanner(System.in);
 
     public int getBoardSize() {
@@ -69,9 +69,12 @@ public class TicTacToeRunner {
 
     public void startGame() {
         System.out.println("Tic Tac Toe\n");
-        fillBoard();
+
         int gameState = noWin;
         int gameMode = setGameMode();
+        boardSize = setBoardSize();
+        board = new char[boardSize][boardSize];
+        fillBoard();
         boolean pcTurn = false;
 
         if(gameMode == playerVsPlayer) {
@@ -80,7 +83,7 @@ public class TicTacToeRunner {
                 makeAMove();
                 gameState = checkGameState();
             } while (gameState == noWin);
-        } else {
+        } else if(gameMode == playerVsPc) {
             do {
                 if(pcTurn == false) {
                     drawBoard();
@@ -111,6 +114,7 @@ public class TicTacToeRunner {
     }
 
     public void drawBoard(){
+        String line;
         for(int i = 0; i< boardSize; i++){
             for(int j = 0; j< boardSize; j++){
                 System.out.print(" " + board[i][j] + " ");
@@ -120,7 +124,11 @@ public class TicTacToeRunner {
             }
             System.out.println();
             if(i != boardSize-1) {
-                System.out.println("---+---+---");
+                line = "";
+                for(int k = 0; k< boardSize; k++) {
+                    line = line + "---+";
+                }
+                System.out.println(line.substring(0, line.length()-1));
             }
         }
     }
@@ -130,6 +138,44 @@ public class TicTacToeRunner {
             for(int j = 0; j < boardSize; j++){
                 board[i][j] = blankSpace;
             }
+        }
+    }
+
+    public int setBoardSize(){
+        int boardSize;
+        do {
+            try{
+                System.out.println("Pick a board size, type:");
+                System.out.println("\"1\" for 3x3 board (3 in a row/column/diagonal to win)");
+                System.out.println("\"2\" for 10x10 board (5 in a row/column/diagonal to win) - NOT WORKING FOR NOW");
+                boardSize = scanner.nextInt();
+
+                if(validateBoardSize(boardSize)) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid Input! Please enter a number.");
+                scanner.nextLine();
+                boardSize = -1;
+            } catch (IllegalArgumentException e){
+                System.out.println("Invalid choice! Please select 1 or 2.");
+                boardSize = -1;
+            }
+
+            }while(boardSize < 0);
+        if(boardSize == 1){
+            boardSize = 3;
+        } else if (boardSize == 2){
+            boardSize = 10;
+        }
+        return boardSize;
+    }
+
+    public boolean validateBoardSize(int boardSize){
+        if(boardSize == 1 || boardSize == 2){
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -162,8 +208,9 @@ public class TicTacToeRunner {
     public boolean validateGameMode(int gameMode) {
         if (gameMode == 0 || gameMode == 1) {
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     public void makeAMove(){
