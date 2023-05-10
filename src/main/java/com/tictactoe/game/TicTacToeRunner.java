@@ -16,7 +16,7 @@ public class TicTacToeRunner {
     private final char oMark = 'O';
     private final char xMark = 'X';
     private final char blankSpace = ' ';
-    private char[][] board;
+    private char[][] board = new char[boardSize][boardSize];
     private final Scanner scanner = new Scanner(System.in);
 
     public int getBoardSize() {
