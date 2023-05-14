@@ -4,7 +4,8 @@ import java.util.Scanner;
 
 public class TicTacToeRunner {
 
-    private int boardSize = 3; // default board size
+    private int boardSize = 3; //default board size
+    private int marksToWin = 3; //default value of marks in line to win
     private final int draw = 0;
     private final int oTurn = 1;
     private final int xTurn = 2;
@@ -73,25 +74,26 @@ public class TicTacToeRunner {
         int gameState = noWin;
         int gameMode = setGameMode();
         boardSize = setBoardSize();
+        marksToWin = setMarksInLineToWin(); // 3 in line for 3x3, 5 in line for 10x10
         board = new char[boardSize][boardSize];
-        fillBoard();
+        Console.fillBoard(boardSize, board, blankSpace);
         boolean pcTurn = false;
 
         if(gameMode == playerVsPlayer) {
             do {
-                drawBoard();
+                Console.drawBoard(board, boardSize);
                 makeAMove();
                 gameState = checkGameState();
             } while (gameState == noWin);
         } else if(gameMode == playerVsPc) {
             do {
                 if(pcTurn == false) {
-                    drawBoard();
+                    Console.drawBoard(board, boardSize);
                     makeAMove();
                     pcTurn = true;
                     gameState = checkGameState();
                 } else {
-                    drawBoard();
+                    Console.drawBoard(board, boardSize);
                     makeAMoveVsPc();
                     pcTurn = false;
                     gameState = checkGameState();
@@ -99,7 +101,7 @@ public class TicTacToeRunner {
             } while (gameState == noWin);
         }
 
-        drawBoard();
+        Console.drawBoard(board, boardSize);;
         switch (gameState) {
             case xWin:
                 System.out.println("Player " + xMark + " just won!");
@@ -113,32 +115,15 @@ public class TicTacToeRunner {
         }
     }
 
-    public void drawBoard(){
-        String line;
-        for(int i = 0; i< boardSize; i++){
-            for(int j = 0; j< boardSize; j++){
-                System.out.print(" " + board[i][j] + " ");
-                if(j != boardSize-1){
-                    System.out.print("|");
-                }
-            }
-            System.out.println();
-            if(i != boardSize-1) {
-                line = "";
-                for(int k = 0; k< boardSize; k++) {
-                    line = line + "---+";
-                }
-                System.out.println(line.substring(0, line.length()-1));
-            }
-        }
-    }
+    public int setMarksInLineToWin(){
+        int marks;
 
-    public void fillBoard(){
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
-                board[i][j] = blankSpace;
-            }
+        if(boardSize <= 9){
+            marks = 3;
+        } else {
+            marks = 5;
         }
+        return marks;
     }
 
     public int setBoardSize(){
@@ -147,7 +132,7 @@ public class TicTacToeRunner {
             try{
                 System.out.println("Pick a board size, type:");
                 System.out.println("\"1\" for 3x3 board (3 in a row/column/diagonal to win)");
-                System.out.println("\"2\" for 10x10 board (5 in a row/column/diagonal to win) - NOT WORKING FOR NOW");
+                System.out.println("\"2\" for 10x10 board (5 in a row/column/diagonal to win)");
                 boardSize = scanner.nextInt();
 
                 if(validateBoardSize(boardSize)) {
@@ -310,12 +295,31 @@ public class TicTacToeRunner {
     }
 
     public int checkRows(){
+        //check if o wins
         for(int i = 0; i < boardSize; i++){
-            if(board[i][0] == board[i][1] && board[i][1] == board[i][2]){
-                if(board[i][0] == oMark){
-                    return oWin;
-                } else if (board[i][0] == xMark){
-                    return xWin;
+            int markCountOWin = 0;
+            for(int j = 0; j < boardSize; j++){
+                if(board[i][j] == oMark) {
+                    markCountOWin++;
+                    if(markCountOWin == marksToWin){
+                        return oWin;
+                    }
+                } else {
+                    markCountOWin = 0;
+                }
+            }
+        }
+        //check if x wins
+        for(int i = 0; i < boardSize; i++){
+            int markCountXWin = 0;
+            for(int j = 0; j < boardSize; j++){
+                if(board[i][j] == xMark) {
+                    markCountXWin++;
+                    if(markCountXWin == marksToWin){
+                        return xWin;
+                    }
+                } else {
+                    markCountXWin = 0;
                 }
             }
         }
@@ -323,12 +327,31 @@ public class TicTacToeRunner {
     }
 
     public int checkColumns(){
-        for(int i = 0; i<boardSize; i++){
-            if(board[0][i] == board[1][i] && board[1][i] == board[2][i]){
-                if(board[0][i] == oMark){
-                    return oWin;
-                } else if(board[0][i] == xMark){
-                    return xWin;
+        //check if o wins
+        for(int j = 0; j < boardSize; j++){
+            int markCountOWin = 0;
+            for(int i = 0; i < boardSize; i++){
+                if(board[i][j] == oMark) {
+                    markCountOWin++;
+                    if(markCountOWin == marksToWin){
+                        return oWin;
+                    }
+                } else {
+                    markCountOWin = 0;
+                }
+            }
+        }
+        //check if x wins
+        for(int j = 0; j < boardSize; j++){
+            int markCountXWin = 0;
+            for(int i = 0; i < boardSize; i++){
+                if(board[i][j] == xMark) {
+                    markCountXWin++;
+                    if(markCountXWin == marksToWin){
+                        return xWin;
+                    }
+                } else {
+                    markCountXWin = 0;
                 }
             }
         }
@@ -336,19 +359,62 @@ public class TicTacToeRunner {
     }
 
     public int checkDiagonal(){
-        if(board[0][0] == board[1][1] && board[1][1] == board[2][2]){
-            if(board[0][0] == oMark){
-                return oWin;
-            } else if(board[0][0] == xMark){
-                return xWin;
+        //Diagonals
+        for(int i = 0; i < boardSize-marksToWin+1; i++){
+            for(int j = 0; j < boardSize-marksToWin+1; j++){
+                boolean win = true;
+                for(int k = 0; k < marksToWin; k++){
+                    if(board[i+k][j+k] != oMark){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win == true){
+                    return oWin;
+                }
             }
         }
-
-        if(board[0][2] == board[1][1] && board[1][1] == board[2][0]){
-            if(board[0][2] == oMark){
-                return oWin;
-            } else if(board[0][2] == xMark){
-                return xWin;
+        for(int i = 0; i < boardSize-marksToWin+1; i++){
+            for(int j = 0; j < boardSize-marksToWin+1; j++){
+                boolean win = true;
+                for(int k = 0; k < marksToWin; k++){
+                    if(board[i+k][j+k] != xMark){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win == true){
+                    return xWin;
+                }
+            }
+        }
+        //Anti-diagonals
+        for(int i = 0; i < boardSize-marksToWin+1; i++){
+            for(int j = marksToWin-1; j<boardSize; j++){
+                boolean win = true;
+                for(int k = 0; k < marksToWin; k++){
+                    if(board[i+k][j-k] != oMark) {
+                        win = false;
+                        break;
+                    }
+                }
+                if(win == true){
+                    return oWin;
+                }
+            }
+        }
+        for(int i = 0; i < boardSize-marksToWin+1; i++){
+            for(int j = marksToWin-1; j<boardSize; j++){
+                boolean win = true;
+                for(int k = 0; k < marksToWin; k++){
+                    if(board[i+k][j-k] != xMark) {
+                        win = false;
+                        break;
+                    }
+                }
+                if(win == true){
+                    return xWin;
+                }
             }
         }
         return noWin;
