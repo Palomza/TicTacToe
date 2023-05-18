@@ -24,6 +24,10 @@ public class TicTacToeRunner {
         return boardSize;
     }
 
+    public int getMarksToWin() {
+        return marksToWin;
+    }
+
     public int getDraw() {
         return draw;
     }
@@ -38,6 +42,14 @@ public class TicTacToeRunner {
 
     public int getNoWin() {
         return noWin;
+    }
+
+    public int getPlayerVsPlayer() {
+        return playerVsPlayer;
+    }
+
+    public int getPlayerVsPc() {
+        return playerVsPc;
     }
 
     public int getoWin() {
@@ -83,7 +95,8 @@ public class TicTacToeRunner {
             do {
                 Console.drawBoard(board, boardSize);
                 makeAMove();
-                gameState = checkGameState();
+                gameState = GameStateChecker.checkGameState(boardSize, board, oMark, xMark, blankSpace, oWin,
+                        xWin, noWin, marksToWin, draw);
             } while (gameState == noWin);
         } else if(gameMode == playerVsPc) {
             do {
@@ -91,12 +104,14 @@ public class TicTacToeRunner {
                     Console.drawBoard(board, boardSize);
                     makeAMove();
                     pcTurn = true;
-                    gameState = checkGameState();
+                    gameState = GameStateChecker.checkGameState(boardSize, board, oMark, xMark, blankSpace, oWin,
+                            xWin, noWin, marksToWin, draw);
                 } else {
                     Console.drawBoard(board, boardSize);
                     makeAMoveVsPc();
                     pcTurn = false;
-                    gameState = checkGameState();
+                    gameState = GameStateChecker.checkGameState(boardSize, board, oMark, xMark, blankSpace, oWin,
+                            xWin, noWin, marksToWin, draw);
                 }
             } while (gameState == noWin);
         }
@@ -292,168 +307,6 @@ public class TicTacToeRunner {
             }
         }
         return moves;
-    }
-
-    public int checkRows(){
-        //check if o wins
-        for(int i = 0; i < boardSize; i++){
-            int markCountOWin = 0;
-            for(int j = 0; j < boardSize; j++){
-                if(board[i][j] == oMark) {
-                    markCountOWin++;
-                    if(markCountOWin == marksToWin){
-                        return oWin;
-                    }
-                } else {
-                    markCountOWin = 0;
-                }
-            }
-        }
-        //check if x wins
-        for(int i = 0; i < boardSize; i++){
-            int markCountXWin = 0;
-            for(int j = 0; j < boardSize; j++){
-                if(board[i][j] == xMark) {
-                    markCountXWin++;
-                    if(markCountXWin == marksToWin){
-                        return xWin;
-                    }
-                } else {
-                    markCountXWin = 0;
-                }
-            }
-        }
-        return noWin;
-    }
-
-    public int checkColumns(){
-        //check if o wins
-        for(int j = 0; j < boardSize; j++){
-            int markCountOWin = 0;
-            for(int i = 0; i < boardSize; i++){
-                if(board[i][j] == oMark) {
-                    markCountOWin++;
-                    if(markCountOWin == marksToWin){
-                        return oWin;
-                    }
-                } else {
-                    markCountOWin = 0;
-                }
-            }
-        }
-        //check if x wins
-        for(int j = 0; j < boardSize; j++){
-            int markCountXWin = 0;
-            for(int i = 0; i < boardSize; i++){
-                if(board[i][j] == xMark) {
-                    markCountXWin++;
-                    if(markCountXWin == marksToWin){
-                        return xWin;
-                    }
-                } else {
-                    markCountXWin = 0;
-                }
-            }
-        }
-        return noWin;
-    }
-
-    public int checkDiagonal(){
-        //Diagonals
-        for(int i = 0; i < boardSize-marksToWin+1; i++){
-            for(int j = 0; j < boardSize-marksToWin+1; j++){
-                boolean win = true;
-                for(int k = 0; k < marksToWin; k++){
-                    if(board[i+k][j+k] != oMark){
-                        win = false;
-                        break;
-                    }
-                }
-                if(win == true){
-                    return oWin;
-                }
-            }
-        }
-        for(int i = 0; i < boardSize-marksToWin+1; i++){
-            for(int j = 0; j < boardSize-marksToWin+1; j++){
-                boolean win = true;
-                for(int k = 0; k < marksToWin; k++){
-                    if(board[i+k][j+k] != xMark){
-                        win = false;
-                        break;
-                    }
-                }
-                if(win == true){
-                    return xWin;
-                }
-            }
-        }
-        //Anti-diagonals
-        for(int i = 0; i < boardSize-marksToWin+1; i++){
-            for(int j = marksToWin-1; j<boardSize; j++){
-                boolean win = true;
-                for(int k = 0; k < marksToWin; k++){
-                    if(board[i+k][j-k] != oMark) {
-                        win = false;
-                        break;
-                    }
-                }
-                if(win == true){
-                    return oWin;
-                }
-            }
-        }
-        for(int i = 0; i < boardSize-marksToWin+1; i++){
-            for(int j = marksToWin-1; j<boardSize; j++){
-                boolean win = true;
-                for(int k = 0; k < marksToWin; k++){
-                    if(board[i+k][j-k] != xMark) {
-                        win = false;
-                        break;
-                    }
-                }
-                if(win == true){
-                    return xWin;
-                }
-            }
-        }
-        return noWin;
-    }
-
-    public boolean checkIfDraw(){
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
-                if(board[i][j] == blankSpace){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public int checkGameState(){
-        int checker;
-
-        checker = checkRows();
-        if(checker != noWin){
-            return checker;
-        }
-
-        checker = checkColumns();
-        if(checker != noWin){
-            return checker;
-        }
-
-        checker = checkDiagonal();
-        if(checker != noWin){
-            return checker;
-        }
-
-        if(checkIfDraw()) {
-            return draw;
-        }
-
-        return noWin;
     }
 
     public static void main(String[] args) {
