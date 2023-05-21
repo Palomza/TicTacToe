@@ -462,11 +462,7 @@ class TicTacToeTestSuite {
 
             Assertions.assertEquals("Invalid choice! Please select 1 or 2.", result);
         }
-        @Test
-        void testInputMismatchException() {
-            //tbd
-            Assertions.assertEquals("Invalid Input! Please enter a number.", "tbd");
-        }
+
     }
 
 
